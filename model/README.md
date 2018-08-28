@@ -7,3 +7,4 @@
 
 * DCN is implemented using customized ``estimator``. This high-level api in tensorflow is very neat.
 * I mimic ``tf.estimator.DNNLinearCombinedClassifier`` to construct this DCN class. 
+* ``dcn.py`` is training and ``DeepCrossNetwork.py`` is model.
