@@ -9,7 +9,7 @@ http://arxiv.org/abs/1708.05123
 
 >Deep & Cross Network (DCN) keeps the benefits of a DNN model, and beyond that, it introduces a novel cross network that is more efficient in learning certain bounded-degree feature interactions. 
 
-DCN is implemented using customized ``estimator``. This high-api is very neat.
+DCN is implemented using customized ``estimator``. This high-level api in tensorflow is very neat.
 
 
 ### EVALUATE METRIC
