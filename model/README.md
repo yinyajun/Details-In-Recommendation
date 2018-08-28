@@ -1,4 +1,5 @@
-##MODEL
+## MODEL
+
 1.**Deep Cross Network (DCN)**
 >Ruoxi Wang, Bin Fu, Gang Fu, Mingliang Wang, Deep & Cross Network for Ad Click Predictions, http://arxiv.org/abs/1708.05123
 
