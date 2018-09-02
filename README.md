@@ -1,6 +1,6 @@
 ## Recommender
 
-In this repo, I will post some popular models in Recommendation using deep learning.
+In this repo, I will try to implement some basic and popular recommender.
 
 ### MODEL
 1. **Deep Cross Network (DCN)**
