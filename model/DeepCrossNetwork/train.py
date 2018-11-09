@@ -9,30 +9,18 @@ from __future__ import print_function
 
 import os
 import sys
-import json
-import math
 import argparse
 import tensorflow as tf
-from util import *
 import DeepCrossNetwork
-from tensorflow.python.feature_column import feature_column as feature_column_lib
 
-# default training set(source dataset refers to some private details. So I change it to public CENSUS DATASET )
-"""
-YOU CAN DOWNLOAD DATA FROM https://archive.ics.uci.edu/ml/machine-learning-databases/adult
-PUT TRAIN DATA TO './data/train'
-PUT EVALUATE DATA TO './data/test'
-YOU CAN ALSO CONSULT OFFICIAL EXAMPLE IN https://github.com/tensorflow/models/blob/master/official/wide_deep/census_dataset.py
-NOTE: I modify the following values and never test anymore, JUST TAKE IT AS AN EXAMPLE!
-"""
 _BATCH_SIZE_TRAIN = 100
-_BATCH_SIZE_TEST = 100
+_BATCH_SIZE_TEST = 256
 _MODEL_DIR = './checkpoint/dcn'
 _MODEL_TYPE = 'deep_cross'
-_TRAIN_DATA = './data/train'
-_TEST_DATA = './data/test'
-_MAX_STEP = 4000
-_EVAL_STEP = 10
+_TRAIN_DATA = './dataset/adult.data'
+_TEST_DATA = './dataset/adult.test'
+_MAX_STEP = 1000
+_EVAL_STEP = 30
 
 # columns parse info
 _CSV_COLUMNS = [
@@ -41,8 +29,10 @@ _CSV_COLUMNS = [
     'capital_gain', 'capital_loss', 'hours_per_week', 'native_country',
     'income_bracket'
 ]
+
 _CSV_COLUMN_DEFAULTS = [[0], [''], [0], [''], [0], [''], [''], [''], [''], [''],
                         [0], [0], [0], [''], ['']]
+_HASH_BUCKET_SIZE = 1000
 
 
 def init_parser():
@@ -118,25 +108,25 @@ def build_estimator(model_dir, model_type, columns):
 
     if model_type == 'deep_cross':
         hidden_units = [32, 16, 8]
-        return DeepCrossNetwork_v3_7.DeepCrossNetwork(model_dir=model_dir,
-                                                      columns=columns,
-                                                      dnn_hidden_units=hidden_units,
-                                                      dnn_dropout=0.5,
-                                                      weight_column='weight',
-                                                      batch_norm=True,
-                                                      config=run_config,
-                                                      l2_reg=0.01,
-                                                      optimizer=tf.train.AdamOptimizer,
-                                                      optimizer_spec={'epsilon': 1e-4},
-                                                      learning_rate_spec={'learning_rate': 0.001,
-                                                                          'decay_method': 'cosine_decay',
-                                                                          'decay_steps': 3000,
-                                                                          'alpha': 0.50, }, )
+        return DeepCrossNetwork.DeepCrossNetwork(model_dir=model_dir,
+                                                 columns=columns,
+                                                 dnn_hidden_units=hidden_units,
+                                                 dnn_dropout=0.5,
+                                                 weight_column=None,  # cost sensitive learning
+                                                 batch_norm=True,
+                                                 config=run_config,
+                                                 l2_reg=0.0,
+                                                 optimizer=tf.train.AdamOptimizer,
+                                                 optimizer_spec={'epsilon': 1e-4},
+                                                 learning_rate_spec={'learning_rate': 0.001,
+                                                                     'decay_method': 'cosine_decay',
+                                                                     'decay_steps': 3000,
+                                                                     'alpha': 0.50, }, )
 
 
-def input_fn(data_dir, num_epochs, shuffle, batch_size):
+def input_fn(data_file, num_epochs, shuffle, batch_size):
     """Generate an input function for the Estimator."""
-    assert tf.gfile.Exists(data_file), ('%s not found. Please make sure you have run census_dataset.py and '
+    assert tf.gfile.Exists(data_file), ('%s not found. Please make sure you have run data_processing.py and '
                                         'set the --data_dir argument to the correct path.' % data_file)
 
     def parse_csv(value):
@@ -148,9 +138,9 @@ def input_fn(data_dir, num_epochs, shuffle, batch_size):
         return features, labels
 
     # Extract lines from input files using the Dataset API.
-    data_files = [os.path.join(data_dir, f) for f in tf.gfile.ListDirectory(data_dir)
-                  if tf.gfile.Exists(os.path.join(data_dir, f))]
-    dataset = tf.data.TextLineDataset(data_files)
+    # data_files = [os.path.join(data_dir, f) for f in tf.gfile.ListDirectory(data_dir)
+    #               if tf.gfile.Exists(os.path.join(data_dir, f))]
+    dataset = tf.data.TextLineDataset(data_file)
 
     if shuffle:
         dataset = dataset.shuffle(buffer_size=1000)
@@ -162,6 +152,7 @@ def input_fn(data_dir, num_epochs, shuffle, batch_size):
     dataset = dataset.batch(batch_size)
     iterator = dataset.make_one_shot_iterator()
     features, labels = iterator.get_next()
+
     return features, labels
 
 
@@ -171,18 +162,17 @@ def main(unused_argv):
     model = build_estimator(FLAGS.model_dir, FLAGS.model_type, columns)
 
     def train_input_fn():
-        return input_fn(FLAGS.train_data, 10, True, FLAGS.train_batch_size)
+        return input_fn(FLAGS.train_data, 100, True, FLAGS.train_batch_size)
 
     def eval_input_fn():
         return input_fn(FLAGS.test_data, 1, False, FLAGS.test_batch_size)
 
     feature_spec = tf.feature_column.make_parse_example_spec(columns)
-    hooks = []
     export_input_fn = tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)
     exporter = tf.estimator.FinalExporter('deep_cross', export_input_fn)
-    train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=FLAGS.max_steps, hooks=hooks)
-    eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn, steps=FLAGS.eval_steps, start_delay_secs=300,
-                                      throttle_secs=600, hooks=hooks, exporters=[exporter])
+    train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=FLAGS.max_steps)
+    eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn, steps=FLAGS.eval_steps, start_delay_secs=60,
+                                      throttle_secs=60, exporters=[exporter])
     # this api can implement both distributed and non-distributed training.
     tf.estimator.train_and_evaluate(model, train_spec, eval_spec)
 

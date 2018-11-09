@@ -101,6 +101,7 @@ class DeepCrossNetwork(tf.estimator.Estimator):
             :param params: (HParams) hyperparameters.
             :return: (EstimatorSpec) Model to be run by Estimator depends on different mode.
             """
+
             # get info from params
             _print_params_info(params)
 
@@ -140,7 +141,7 @@ def _dcn_logit_fn_builder(params):
     return dcn_logits_fn
 
 
-def _create_estimator_spec(features, mode, logits, params, labels=None):
+def _create_estimator_spec(features, mode, logits, params, labels):
     """ Returns an `EstimatorSpec`.
     :param features: (Dict) A mapping from key to tensors, input features to the model.
     :param mode: (ModeKeys) Specifies if training, evaluation or prediction.
@@ -171,12 +172,15 @@ def _create_estimator_spec(features, mode, logits, params, labels=None):
                                               predictions=predictions,
                                               export_outputs={'serving_default': output})
 
+        # compatible with logits dimension, [?,1]
+        # NOTE: must after Predict, because in Predict label is None
+        labels = tf.expand_dims(labels, axis=-1)
         weighted_loss, unweighted_loss, weights, labels = _create_loss(features=features, params=params, logits=logits,
                                                                        labels=labels)
 
         if params.l2_reg:
             l2_loss = tf.losses.get_regularization_loss()
-            weighted_loss += l2_loss
+            weighted_loss += l2_loss * params.l2_reg
 
         # Eval
         metrics = _get_metric_op(labels, logistic, class_ids, weights, unweighted_loss)
@@ -209,10 +213,13 @@ def _create_loss(features, params, logits, labels):
     # unweighted loss
     unweighted_loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits)
 
-    # calc weighted loss
+    # calc weighted loss (assemble cost-sensitive learning)
     weight_column = params.weight_column
-    weights = _get_weights_and_check_match_logits(
-        features=features, weight_column=weight_column, logits=logits)  # get weight col tensor
+    if weight_column:
+        weights = _get_weights_and_check_match_logits(features=features, weight_column=weight_column,
+                                                      logits=logits)  # get weight col tensor
+    else:
+        weights = 1.0
     weighted_loss = tf.losses.compute_weighted_loss(unweighted_loss, weights=weights,
                                                     reduction=tf.losses.Reduction.MEAN)
     return weighted_loss, unweighted_loss, weights, labels
