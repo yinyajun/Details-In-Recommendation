@@ -15,13 +15,22 @@
 3.  ALL CLI arguments have default value, pls consult `train.py`.
 -----
 # Evaluation
-* parameters not yet tuned for this toy example.*
+*parameters not yet tuned for this toy example.*
+
 INFO:tensorflow:Saving dict for global step 1000:
+
 accuracy = 0.8217448,
+
 accuracy_baseline = 0.76601565,
+
 auc = 0.83714986,
+
 average_loss = 3.32518,
+
 global_step = 1000,
+
 loss = 3.32518,
+
 precision = 0.73568285,
+
 recall = 0.37173066
