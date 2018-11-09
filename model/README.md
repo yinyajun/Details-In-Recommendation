@@ -5,6 +5,4 @@
 
 >Deep & Cross Network (DCN) keeps the benefits of a DNN model, and beyond that, it introduces a novel cross network that is more efficient in learning certain bounded-degree feature interactions.
 
-* DCN is implemented using customized ``estimator``. This high-level api in tensorflow is very neat.
-* I mimic ``tf.estimator.DNNLinearCombinedClassifier`` to construct this DCN class. 
-* ``dcn.py`` is training and ``DeepCrossNetwork.py`` is model.
+>Implement with customed estimator which is high-level tensorflow API. It is easy for distributed training and can export saved model for tensorflow serving to predict online.
