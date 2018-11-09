@@ -1,11 +1,9 @@
 ## Recommender
 
-In this repo, I will try to implement some basic and popular recommender.
+In this repo, I will try to implement some basic and popular recommender. Most of models are implement with **customed estimator** which is high-level tensorflow API. It is easy for distributed training and can export saved model for tensorflow serving to predict online.
 
 ## MODEL
 ### Deep Cross Network (DCN)
-  
-  Implement with **customed estimator** which is high-level tensorflow API. It is easy for distributed training and can export saved model for tensorflow serving to predict online.
   
 >Ruoxi Wang, Bin Fu, Gang Fu, Mingliang Wang, Deep & Cross Network for Ad Click Predictions, 
 https://arxiv.org/pdf/1708.05123.pdf
