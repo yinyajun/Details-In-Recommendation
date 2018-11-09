@@ -2,7 +2,7 @@
 
 1.**Deep Cross Network (DCN)**
 
-    Implement with **customed estimator** which is high-level tensorflow API. It is easy for distributed training and can export saved model for tensorflow serving to predict online.
+  Implement with **customed estimator** which is high-level tensorflow API. It is easy for distributed training and can export saved model for tensorflow serving to predict online.
 
 >Ruoxi Wang, Bin Fu, Gang Fu, Mingliang Wang, Deep & Cross Network for Ad Click Predictions, http://arxiv.org/abs/1708.05123
 
