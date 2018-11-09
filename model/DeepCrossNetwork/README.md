@@ -6,7 +6,7 @@
 -----
 # Code Organization
 * ``DeepCrossNetwork.py``: DCN model, subclass of tf.estimator.
-* ``train.py``: Train scipt.
+* ``train.py``: Train script.
 * ``data_processing.py``: Download dataset and process it.
 -----
 # Train
