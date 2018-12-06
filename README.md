@@ -3,6 +3,7 @@
 Most of models are implement with **customed estimator** which is high-level tensorflow API. It is easy for distributed training and can export saved model for tensorflow serving to predict online.
 
 ## MODEL
+
 ### Deep Cross Network (DCN)
   
 >Ruoxi Wang, Bin Fu, Gang Fu, Mingliang Wang, Deep & Cross Network for Ad Click Predictions, 
@@ -17,6 +18,12 @@ https://arxiv.org/pdf/1708.05123.pdf
 https://arxiv.org/pdf/1804.07931.pdf
 
 >Entire Space Multi-task Model (ESMM) can i) modeling CVR directly over the entire space, ii) employing a feature representation transfer learning strategy.
+
+### Weighted ALS
+
+### Matrix Factorization
+
+### Causal Embedding
 
 
 ## EVALUATE METRIC
