@@ -69,8 +69,7 @@ class FastALS(TopKRecommender):
             self.W[i, j] = 1
 
     def _init_caches(self):
-        self.prediction_users = 0  # hat{r}_ui
-        # todo
+        pass
 
     def _init_model_parameters(self):
         mean = 0
