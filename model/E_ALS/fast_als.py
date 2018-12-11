@@ -42,11 +42,11 @@ class FastALS(TopKRecommender):
         # caches
         self.SU = None
         self.SV = None
-        self.prediction_users, self.prediction_items = None, None
-        self.rating_users, self.rating_items = None, None
-        self.w_users, self.w_items = None, None
+        # self.prediction_users, self.prediction_items = None, None
+        # self.rating_users, self.rating_items = None, None
+        # self.w_users, self.w_items = None, None
 
-        self.W = None  # weight for each positive instance in trainMatrix.
+        self.W = sp.dok_matrix((self.userCount, self.itemCount))  # weight for each positive instance in trainMatrix.
         self.Wi = None  # weight for negative instances on item i.
         self.w_new = 1  # weight for new instance in online learning
 
@@ -64,15 +64,12 @@ class FastALS(TopKRecommender):
         self.Wi = self.w0 * p / sum(p)
 
         # By default, the weight for positive instance is uniformly 1.
-        assert self.W.format == 'csc'
-        row = self.W.indices
-        col = self.W.tocsr().indices
-        assert len(row) == len(col)
-        data = np.ones(len(row))
-        self.W = sp.csr_matrix((data, (row, col)))
+        keys = self.trainMatrix.keys()
+        for i, j in keys:
+            self.W[i, j] = 1
 
     def _init_caches(self):
-        self.prediction_users = 0
+        self.prediction_users = 0  # hat{r}_ui
         # todo
 
     def _init_model_parameters(self):
@@ -120,15 +117,34 @@ class FastALS(TopKRecommender):
         itemList = self.trainMatrix.getrow(u).nonzero()[1]
         if len(itemList) == 0:
             return
-        # prediction cache for the user
-        for i in itemList:
-            self.prediction_items[i] = self.predict(u, i)
-            self.rating_items[i] = self.trainMatrix[u, i]
-            self.w_items[i] = self.W[u, i]
+        # # prediction cache for the user
+        # for i in itemList:
+        #     self.prediction_items[i] = self.predict(u, i)
+        #     self.rating_items[i] = self.trainMatrix[u, i]
+        #     self.w_items[i] = self.W[u, i]
 
         oldVector = self.U.getrow(u).toarray()
+        for f in xrange(self.factors):
+            numer = 0
+            denom = 0
+            # O(k) complexity for the negative part
+            for k in xrange(self.factors):
+                if k != f:
+                    numer -= self.U[u, k] * self.SV[k, f]
 
+            # O(Nu) complexity for the positive part
+            for i in itemList:
+                w_ui = self.W[u, i]
+                r_ui = self.trainMatrix[u, i]
+                ci = self.Wi[i]
+                r_ui_f = self.predict(u, i) - self.U[u, f] * self.V[i, f]
 
+                numer += (w_ui * r_ui - (w_ui - ci) * r_ui_f) * self.V[i, f]
+                denom += (w_ui - c_i) * self.V[i, f] * self.V[i, f]
+            denom += self.SV[f, f] + self.reg
+
+            # Parameter Update
+            self.U = self._change_entry_in_sparse_matrix(self.U, u, f, numer / denom)
 
     def update_item(self, i):
         pass
