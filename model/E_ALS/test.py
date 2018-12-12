@@ -30,6 +30,3 @@ print(index)
 print(ind)
 print(data)
 a = m.getrow()
-
-
-sparse.dok_matrix()
