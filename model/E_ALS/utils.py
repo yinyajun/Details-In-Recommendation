@@ -22,7 +22,7 @@ class Rating(object):
             userId, itemId, score = int(line[0]), int(line[1]), float(line[2])
             timestamp = None if len(line) == 3 else float(line[3])
         elif len(args) == 3 or len(args) == 4:
-            userId, itemId, score = {args[0], args[1], args[2]}
+            userId, itemId, score = args[0], args[1], args[2]
             timestamp = None if len(args) == 3 else args[3]
         else:
             raise ValueError("argument invalid!")
@@ -40,6 +40,11 @@ class Rating(object):
 
     def __repr__(self):
         return self.__str__()
+
+    def __lt__(self, other):
+        if self.timestamp < other.timestamp:
+            return -1
+
 
 
 def TopKeyByValue(hashmap, topK, ignoreKeys=None):
