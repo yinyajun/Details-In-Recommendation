@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
-TEST_SAM = 9
+TEST_SAM = 99
 TRAIN_SUM = 4
 
 
