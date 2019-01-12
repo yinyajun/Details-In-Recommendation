@@ -1,10 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time    : 2019/1/12 21:52
-# @Author  : Yajun Yin
-# @Note    :
 import tensorflow as tf
 from tensorflow.contrib.lookup import index_table_from_file
+import time
 
 
 class BPRDynamicSampler(object):
@@ -46,16 +42,19 @@ class BPRDynamicSampler(object):
     >>> bpr_dataset_iter = sampler.dataset(data_file, 128, True)
     >>> for epoch in range(100):
     >>>     sess.run(bpr_dataset_iter.initializer)
-    >>>     sess.run(bpr_dataset_iter.get_next())
+    >>>     print(sess.run(bpr_dataset_iter.get_next()))
     """
 
     def __init__(self, user_interactive_items, user_list_file, item_list_file, sess):
         self.user_items = user_interactive_items
-        self.item_table = index_table_from_file(user_list_file)
-        self.user_table = index_table_from_file(item_list_file)
+        self.item_table = index_table_from_file(item_list_file)
+        self.user_table = index_table_from_file(user_list_file)
+        sess.run(tf.tables_initializer())
+
         self.generate_sparse_tensor_table(sess)
 
     def set_sparse_tensor_index_value(self, user, items):
+
         user_index = self.user_table.lookup(user)
         items_index = self.item_table.lookup(items)
         for i in range(items.get_shape().as_list()[0]):
@@ -78,7 +77,7 @@ class BPRDynamicSampler(object):
             for k, v in d:
                 index.append(k)
                 value.append(v)
-        sess.run(tf.tables_initializer())
+
         self.num_user = sess.run(self.user_table.size())
         self.num_item = sess.run(self.item_table.size())
         index, value = sess.run([index, value])
@@ -94,13 +93,13 @@ class BPRDynamicSampler(object):
             interactive_items = self.lookup_sparse_tensor_by_index(self.table, u)
             item_i = columns[1]
             item_i = self.item_table.lookup(item_i)
-            item_j = tf.random_uniform(shape=[], minval=0, maxval=self.num_item, dtype=tf.int64)
+            item_j = tf.random_uniform(shape=[], minval=0, maxval=7, dtype=tf.int64)
 
             def cond(item_j, interactive_items):
                 return tf.reduce_any(tf.equal(interactive_items, item_j))
 
             def body(item_j, interactive_items):
-                item_j = tf.random_uniform(shape=[], minval=0, maxval=self.num_item, dtype=tf.int64)
+                item_j = tf.random_uniform(shape=[], minval=0, maxval=7, dtype=tf.int64)
                 return item_j, interactive_items
 
             j, _ = tf.while_loop(cond, body, [item_j, interactive_items])
@@ -116,3 +115,16 @@ class BPRDynamicSampler(object):
         dataset = dataset.prefetch(batch_size * 8)
         iterator = dataset.make_initializable_iterator()
         return iterator
+
+
+if __name__ == '__main__':
+    user_list_file, item_list_file = "user_list.voc", "item_list.voc"
+    data_file = "train.csv"
+    a = {54: [342, 756, 758], 32: [432, 342, 5341]}
+    sess = tf.InteractiveSession()
+    sampler = BPRDynamicSampler(a, user_list_file, item_list_file, sess)
+    bpr_dataset_iter = sampler.dataset(data_file, 3, False)
+
+    for epoch in range(20):
+        sess.run(bpr_dataset_iter.initializer)
+        print(sess.run(bpr_dataset_iter.get_next()))
