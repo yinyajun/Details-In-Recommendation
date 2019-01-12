@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2019/1/12 21:52
+# @Author  : Yajun Yin
+# @Note    :
 import tensorflow as tf
 from tensorflow.contrib.lookup import index_table_from_file
 
