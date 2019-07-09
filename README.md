@@ -4,6 +4,12 @@ Most of models are implement with **customed estimator** which is high-level ten
 
 ## MODEL
 
+### Deep Factorization-Machine (DeepFM)
+>DeepFM: A Factorization-Machine based Neural Network for CTR Prediction
+* high-level tensorflow api (estimator, feature_column etc.)
+* support multi-hot feature. e.g. user history purchased items sequence.
+
+
 ### Deep Cross Network (DCN)
   
 >Ruoxi Wang, Bin Fu, Gang Fu, Mingliang Wang, Deep & Cross Network for Ad Click Predictions, 
@@ -19,11 +25,14 @@ https://arxiv.org/pdf/1804.07931.pdf
 
 >Entire Space Multi-task Model (ESMM) can i) modeling CVR directly over the entire space, ii) employing a feature representation transfer learning strategy.
 
+
 ### Weighted ALS
 
 ### Matrix Factorization
 
 ### Causal Embedding
+
+
 
 
 ## EVALUATE METRIC
