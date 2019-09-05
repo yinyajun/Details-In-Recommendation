@@ -1,4 +1,5 @@
 ## MODEL
+1. **Deep Walk**
 
 1. **Deep Cross Network (DCN)**
 
