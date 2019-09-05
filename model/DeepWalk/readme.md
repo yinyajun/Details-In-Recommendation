@@ -1,4 +1,15 @@
-how to use deepwalk?
+### About DeepWalk
+
+* Refactor [phanein/deepwalk](https://github.com/phanein/deepwalk)
+* Pure Pyspark Implementation
+* Some details refer to `Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba`
+    1. Divide user behaviors into sessions
+    2. Use biased random walk (transition probability is not uniform)
+
+* Input: user behavior RDD(format: user, item, duration, timestamp)
+* Output: item embedding dict (item, embedding)
+
+### How to use deepwalk?
 
 ```python
 from pyspark.mllib.feature import Word2Vec
