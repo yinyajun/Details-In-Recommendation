@@ -40,7 +40,7 @@ As its name suggests,`Recommender-In-Detail` is a package which offers detailed 
 | Tompson Sampling | Bandit |  |
 | UCB | Bandit |  |
 | LinUCB | Bandit |  |
-| Bert |  |  |
+| Bert | NLP |  |
 | Causal Embedding | MF/Cause |  |
 
 ## Metrics
