@@ -60,7 +60,7 @@ m.save_vectors(path="/tmp/random_walk.emb", vectors=vectors)
 
 2. If `pre_process` is `False`, you should supply RDD of adjacency table.
     Format like:[item1,(item2,item3,...),(weight1, weitht2, weight3,...)]
-   (How to get ? you could see `DeepWalk.preprocessing` )
+   *How to get ? you could see `DeepWalk.preprocessing` *
 3. **If weights in adjacency table are set as `None`, it deteriorates to standard Random Walk.**
 
 ## Example
