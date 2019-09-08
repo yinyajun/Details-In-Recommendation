@@ -4,6 +4,10 @@
 # @Author  : Yajun Yin
 # @Note    :
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 
 def session_segmentation(data, session_duration):
     # data: [(t1, item), (t2, item), (t3, item)]
@@ -58,10 +62,9 @@ def adjacency_weight(data):
 
 def preprocessing(rdd, min_duration, max_active_num, session_duration):
     """
-    rdd: user, item, duration, time
+    rdd: user, item, timestamp
     """
-    rdd = rdd.filter(lambda p: int(p[2]) >= min_duration)  # 过滤click duration过少的物品，可能是误点
-    rdd = rdd.map(lambda p: (p[0], (p[3], p[1])))  # (user, (time, item))
+    rdd = rdd.map(lambda p: (p[0], (p[2], p[1])))  # (user, (time, item))
     rdd = rdd.groupByKey() \
         .filter(lambda p: 2 <= len(p[1]) < max_active_num) \
         .mapValues(lambda p: sorted(p, key=lambda k: k[0])) \

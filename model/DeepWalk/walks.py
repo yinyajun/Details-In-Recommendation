@@ -4,11 +4,13 @@
 # @Author  : Yajun Yin
 # @Note    :
 
+from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 
 import math
 import random
-from graph import Graph
+from .graph import Graph
 from six.moves import zip_longest
 
 
@@ -24,7 +26,6 @@ def generate_walks(sc, G, num_paths, path_length,
     def _generate_walks(args):
         nodes, num_paths, path_length, alpha, seed = args
         G = Graph().from_map(__current_graph.value)
-        # G = __current_graph
         walks = []
         for walk in build_deepwalk_corpus_iter(G=G,
                                                nodes=nodes,

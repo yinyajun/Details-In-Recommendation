@@ -4,7 +4,9 @@
 # @Author  : Yajun Yin
 # @Note    :
 
+from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 
 import heapq
 import random
@@ -67,18 +69,9 @@ class Graph(defaultdict):
 
 
 def load_adjacency_list_from_spark(rdd):
-    """从rdd中加载邻边数据，以构成图
-    rdd: (start_node, ([nodes..],[weights...])), start_node is distinct
     """
-    t0 = time.time()
-    convert_func = from_adj_list_spark
-    G = convert_func(rdd)
-    consume = time.time() - t0
-    print(consume)
-    return G
-
-
-def from_adj_list_spark(rdd):
+    从rdd中加载邻边数据，以构成图
+    """
     G = Graph()
     data = rdd.collectAsMap()
     for key, value in data.items():
@@ -96,14 +89,14 @@ def calc_indegree(G):
             d[i] = d.get(i, 0) + 1
     nodes = [(i[1], i[0]) for i in d.items()]
     heapq.heapify(nodes)
-    return nodes
+    return heapq.nlargest(100, nodes), heapq.nsmallest(100, nodes)
 
 
 def calc_outdegree(G):
     d = G.degree(nodes=G.nodes())
     nodes = [(i[1], i[0]) for i in d.items()]
     heapq.heapify(nodes)
-    return nodes
+    return heapq.nlargest(100, nodes), heapq.nsmallest(100, nodes)
 
 
 # ============== helper ====================
