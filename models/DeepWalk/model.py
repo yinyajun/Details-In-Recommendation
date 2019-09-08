@@ -10,10 +10,11 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+import copy
 
 from pyspark.ml import Estimator
 from pyspark import SparkContext
-from pyspark.ml.param import Param, Params, TypeConverters
+from pyspark.ml.param import Param, Params
 from pyspark.mllib.feature import Word2Vec
 
 from .walks import generate_walks
@@ -21,69 +22,53 @@ from .graph import load_adjacency_list_from_spark
 from .preprocess import preprocessing
 
 
+# TypeConverters is not supported in Spark 1.6.0
+# window_size is not supported in Word2Vec in Spark 1.6.0
 class DeepWalk(Estimator):
     # pre_process
     pre_process = Param(Params._dummy(),
                         "pre_process",
-                        "Whether use processing function or not",
-                        TypeConverters.toBoolean)
+                        "Whether use processing function or not")
     max_active_num = Param(Params._dummy(),
                            "max_active_num",
-                           "Avoid Spam User, max impressed items num per user",
-                           typeConverter=TypeConverters.toInt)
+                           "Avoid Spam User, max impressed items num per user")
     session_duration = Param(Params._dummy(),
                              "session_duration",
-                             "The duration for session segment",
-                             typeConverter=TypeConverters.toFloat)
-
+                             "The duration for session segment")
     # walkers
     num_workers = Param(Params._dummy(),
                         "num_workers",
-                        "Parallelism for generation walks",
-                        typeConverter=TypeConverters.toInt)
+                        "Parallelism for generation walks")
     num_paths = Param(Params._dummy(),
                       "num_paths",
-                      "The nums of paths for a vertex",
-                      typeConverter=TypeConverters.toInt)
+                      "The nums of paths for a vertex")
     path_length = Param(Params._dummy(),
                         "path_length",
-                        "The maximum length of a path",
-                        typeConverter=TypeConverters.toInt)
+                        "The maximum length of a path")
     alpha = Param(Params._dummy(),
                   "alpha",
-                  "Restart Probability",
-                  typeConverter=TypeConverters.toFloat)
-
+                  "Restart Probability")
     # word2vec
     vector_size = Param(Params._dummy(),
                         "vector_size",
-                        "Low latent vector size",
-                        typeConverter=TypeConverters.toInt)
+                        "Low latent vector size")
     min_count = Param(Params._dummy(),
                       "min_count",
-                      "Min count of a vertex in corpus",
-                      typeConverter=TypeConverters.toInt)
+                      "Min count of a vertex in corpus")
     num_partitions = Param(Params._dummy(),
                            "num_partitions",
-                           "Num partitions of training skip gram",
-                           typeConverter=TypeConverters.toInt)
+                           "Num partitions of training skip gram")
     num_iter = Param(Params._dummy(),
                      "num_iter",
-                     "Skip gram iteration nums",
-                     typeConverter=TypeConverters.toInt)
-    window_size = Param(Params._dummy(),
-                        "window_size",
-                        "Window size for target vertex",
-                        typeConverter=TypeConverters.toInt)
+                     "Skip gram iteration nums")
     learning_rate = Param(Params._dummy(),
                           "learning_rate",
-                          "Skip gram learning rate",
-                          typeConverter=TypeConverters.toFloat)
+                          "Skip gram learning rate")
 
     def __init__(self, **kwargs):
         super(DeepWalk, self).__init__()
+        self._copy_params()
         self._init_logger()
-
         self._setDefault(pre_process=True,
                          max_active_num=200,
                          session_duration=3600,
@@ -95,10 +80,17 @@ class DeepWalk(Estimator):
                          min_count=50,
                          num_partitions=10,
                          num_iter=1,
-                         window_size=5,
                          learning_rate=0.025)
         self.logger.info("\n" + self.explainParams())
         self.set_params(**kwargs)
+
+    def _copy_params(self):
+        # this function is not implemented in Spark1.6.0
+        cls = type(self)
+        src_name_attrs = [(x, getattr(cls, x)) for x in dir(cls)]
+        src_params = list(filter(lambda nameAttr: isinstance(nameAttr[1], Param), src_name_attrs))
+        for name, param in src_params:
+            setattr(self, name, copy_new_parent(param, self))
 
     def _init_logger(self):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s  %(name)s  %(levelname)s  %(message)s')
@@ -148,14 +140,12 @@ class DeepWalk(Estimator):
         num_partitions = self.getOrDefault("num_partitions")
         learning_rate = self.getOrDefault("learning_rate")
         num_iter = self.getOrDefault("num_iter")
-        window_size = self.getOrDefault("window_size")
         model = Word2Vec() \
             .setVectorSize(vector_size) \
             .setMinCount(min_count) \
             .setNumPartitions(num_partitions) \
             .setLearningRate(learning_rate) \
             .setNumIterations(num_iter) \
-            .setWindowSize(window_size) \
             .fit(walks_rdd)
         return model.getVectors()
 
@@ -164,3 +154,14 @@ class DeepWalk(Estimator):
         with open(path, 'w') as f:
             for item, vec in vectors.items():
                 f.write("{item} {vec}\n".format(item=str(item), vec=' '.join([str(v) for v in vec])))
+
+
+def copy_new_parent(param, parent):
+    # this function is not implemented in Spark1.6.0
+    assert isinstance(param, Param)
+    if param.parent == "undefined":
+        new_param = copy.copy(param)
+        new_param.parent = parent.uid
+        return new_param
+    else:
+        raise ValueError("Cannot copy from non-dummy parent %s." % parent)
