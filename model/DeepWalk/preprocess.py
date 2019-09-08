@@ -60,7 +60,7 @@ def adjacency_weight(data):
     return nodes, weights
 
 
-def preprocessing(rdd, min_duration, max_active_num, session_duration):
+def preprocessing(rdd, max_active_num, session_duration):
     """
     rdd: user, item, timestamp
     """

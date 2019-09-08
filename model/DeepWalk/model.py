@@ -23,9 +23,6 @@ from .preprocess import preprocessing
 
 class DeepWalk(Estimator):
     # pre_process
-    source_rdd = Param(Params._dummy(),
-                       "source_rdd",
-                       "Source data Rdd, format: (user, item, timestamp)")
     pre_process = Param(Params._dummy(),
                         "pre_process",
                         "Whether use processing function or not",
@@ -112,7 +109,7 @@ class DeepWalk(Estimator):
 
     def _fit(self, dataset):
         self.logger.info("Create graph...")
-        rdd = self._pre_processing()
+        rdd = self._pre_processing(dataset)
         self._create_graph(rdd)
         self.logger.info("Create graph done.")
         self.logger.info("Generate walks...")
@@ -136,13 +133,13 @@ class DeepWalk(Estimator):
         walks_rdd = generate_walks(sc, self.G, num_paths, path_length, num_workers, alpha)
         return walks_rdd
 
-    def _pre_processing(self):
+    def _pre_processing(self, dataset):
         # set pre_process False to input custom source RDD
-        rdd = self.getOrDefault("source_rdd")
+        rdd = dataset
         if self.getOrDefault("pre_process"):
-            ax_active_num = self.getOrDefault("max_active_num")
+            max_active_num = self.getOrDefault("max_active_num")
             session_duration = self.getOrDefault("session_duration")
-            rdd = preprocessing(rdd, ax_active_num, session_duration)
+            rdd = preprocessing(rdd, max_active_num, session_duration)
         return rdd
 
     def _skip_gram(self, walks_rdd):
