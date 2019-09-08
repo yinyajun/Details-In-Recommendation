@@ -1,4 +1,4 @@
-## DeepWalk
+# DeepWalk
 
 This is a refactor of [phanein](https://github.com/phanein)/**deepwalk**, which is implemented using pure `pySpark`. Since
 
@@ -10,7 +10,7 @@ This is a refactor of [phanein](https://github.com/phanein)/**deepwalk**, which 
 
  **Chinese blog**: [DeepWalk](https://yinyajun.github.io/ML-Recommend/deep_walk/).
 
-### Notes
+## Notes
 
 Details of DeepWalk, please see paper[1],[2].
 
@@ -20,7 +20,7 @@ According to paper[2], user behaviors could construct **weighted graph**. Edge w
 
 **This package follows paper[2]'s methods and it could deteriorates to standard Random Walk in  paper[1] easily.**
 
-### Usage
+## Usage
 
 ```python
 from model.DeepWalk import DeepWalk
@@ -35,9 +35,9 @@ vectors = m.fit(dataset)
 m.save_vectors(path="/tmp/random_walk.emb", vectors=vectors)
 ```
 
-### Params
+## Params
 
-#### Model Params
+### Model Params
 
 1. alpha: Restart Probability (default: 0.0)
 2. learning_rate: Skip gram learning rate (default: 0.025)
@@ -53,7 +53,7 @@ m.save_vectors(path="/tmp/random_walk.emb", vectors=vectors)
 12. vector_size: Low latent vector size (default: 50)
 13. window_size: Window size for target vertex (default: 5)
 
-#### Input
+### Input
 
 1. If `pre_process` is `True`, `DeepWalk.preprocessing` helps you pre-processing.
     All you need is to supply RDD with a format likes: [user,item,timestamp],
@@ -63,10 +63,10 @@ m.save_vectors(path="/tmp/random_walk.emb", vectors=vectors)
    (How to get ? you could see `DeepWalk.preprocessing` )
 3. **If weights in adjacency table are set as `None`, it deteriorates to standard Random Walk.**
 
-### Example
+## Example
 see `example/deepwalk.py`
 
-### Papers
+## Papers
 
 1. [DeepWalk: Online Learning of Social Representations](https://arxiv.org/abs/1403.6652)
 2. [Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba](https://arxiv.org/abs/1803.02349)
