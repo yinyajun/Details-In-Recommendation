@@ -12,13 +12,17 @@ def get_input_rdd():
     return rdd
 
 
-if __name__ == '__main__':
-    dataset = get_input_rdd()  # format: [user, item, timestamp]
-    path = "/tmp/random_walk.emb"
-
-    m = DeepWalk(num_paths=50)
+def train(dataset, path):
+    m = DeepWalk(num_paths=10)
     vectors = m.fit(dataset)
     m.save_vectors(path=path, vectors=vectors)
+
+
+if __name__ == '__main__':
+    rdd = get_input_rdd()  # format: [user, item, timestamp]
+    file = "/tmp/random_walk.emb"
+
+    train(rdd, file)
 
 # 2019-09-08 21:08:38,298  deep_walk.model  INFO
 # alpha: Restart Probability (default: 0)
