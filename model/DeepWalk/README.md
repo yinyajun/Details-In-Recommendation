@@ -39,19 +39,19 @@ m.save_vectors(path="/tmp/random_walk.emb", vectors=vectors)
 
 #### Model Params
 
-> alpha: Restart Probability (default: 0.0)
-> learning_rate: Skip gram learning rate (default: 0.025)
-> max_active_num: Avoid Spam User, max impressed items num per user (default: 200)
-> min_count: Min count of a vertex in corpus (default: 50)
-> num_iter: Skip gram iteration nums (default: 1)
-> num_partitions: Num partitions of training skip gram (default: 10)
-> num_paths: The nums of paths for a vertex (default: 20)
-> num_workers: Parallelism for generation walks (default: 400)
-> path_length: The maximum length of a path (default: 50)
-> pre_process: Whether use processing function or not (default: True)
-> session_duration: The duration for session segment (default: 3600.0)
-> vector_size: Low latent vector size (default: 50)
-> window_size: Window size for target vertex (default: 5)
+1. alpha: Restart Probability (default: 0.0)
+2. learning_rate: Skip gram learning rate (default: 0.025)
+3. max_active_num: Avoid Spam User, max impressed items num per user (default: 200)
+4. min_count: Min count of a vertex in corpus (default: 50)
+5. num_iter: Skip gram iteration nums (default: 1)
+6. num_partitions: Num partitions of training skip gram (default: 10)
+7. num_paths: The nums of paths for a vertex (default: 20)
+8. num_workers: Parallelism for generation walks (default: 400)
+9. path_length: The maximum length of a path (default: 50)
+10. pre_process: Whether use processing function or not (default: True)
+11. session_duration: The duration for session segment (default: 3600.0)
+12. vector_size: Low latent vector size (default: 50)
+13. window_size: Window size for target vertex (default: 5)
 
 #### Input
 
