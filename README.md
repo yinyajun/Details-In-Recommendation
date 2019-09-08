@@ -8,7 +8,7 @@ As its name suggests,`Recommender-In-Detail` is a package which offers detailed 
 4. `examples`: examples to test our implementation in `models` by using dataset in `dataset` and metrics in `metrics`.
 5. `utils`: some useful tools, e.g., embedding visualization, and etc.
 
-[中文博客](https://yinyajun.github.io/).
+[中文博客-Chinese Blogs](https://yinyajun.github.io/).
 
 ## Implemented Models
 
