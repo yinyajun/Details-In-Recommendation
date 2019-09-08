@@ -14,9 +14,9 @@ This is a refactor of [phanein](https://github.com/phanein)/**deepwalk**, which 
 
 Details of DeepWalk, please see paper[1],[2].
 
-Note that paper[1] construct **unweighted graph** and adopt **standard random walk** where the transition probability of each node is uniform. 
+* Note that paper[1] constructs **unweighted graph** and adopts **standard random walk** where the transition probability of each node is uniform.
 
-According to paper[2], user behaviors could construct **weighted graph**. Edge weight means occurrence of adjacent items in user behaviors log. In addition, **biased random walk** is adopted in this paper. The transition probability is depend on outgoing edges' weight instead of  equal probability.
+* According to paper[2], user behaviors could construct **weighted graph**. Edge weight means occurrence of adjacent items in user behaviors log. In addition, **biased random walk** is adopted in this paper. The transition probability is depend on outgoing edges' weight instead of  equal probability.
 
 **This package follows paper[2]'s methods and it could deteriorates to standard Random Walk in  paper[1] easily.**
 
