@@ -22,8 +22,11 @@ from .graph import load_adjacency_list_from_spark
 from .preprocess import preprocessing
 
 
-# TypeConverters is not supported in Spark 1.6.0
-# window_size is not supported in Word2Vec in Spark 1.6.0
+# Notice, in Spark 1.6.0
+# Param is defines as Param(parent, name, doc), it has not TypeConverters attribute
+# _copy_params method is not implemented in Params
+# _copy_new_parent method is not implemented in Param
+# window_size is not supported in Word2Vec
 class DeepWalk(Estimator):
     # pre_process
     pre_process = Param(Params._dummy(),
