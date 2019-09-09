@@ -76,7 +76,7 @@ class DeepWalk(Estimator):
                          max_active_num=200,
                          session_duration=3600,
                          num_workers=400,
-                         num_paths=20,
+                         num_paths=10,
                          path_length=50,
                          alpha=0,
                          vector_size=50,
