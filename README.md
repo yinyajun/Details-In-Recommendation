@@ -1,6 +1,6 @@
-# Recommender-In-Detail
+# Details-In-Recommendation
 
-As its name suggests,`Recommender-In-Detail` is a package which offers detailed implementations of state-of-the-art techniques and basic methods in recommendation. Most of them could be used in production environments through simple modifications. The structure of the package is as follows:
+As its name suggests,`Details-In-Recommendation` is a package which offers detailed implementations of state-of-the-art techniques and basic methods in recommendation. Most of them could be used in production environments through simple modifications. The structure of the package is as follows:
 
 1. `models`: contains many sub-package which implements recommendation methods.
 2. `metrics`: some metrics to evaluate recommendation.
